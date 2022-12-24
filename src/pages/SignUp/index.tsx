@@ -1,12 +1,12 @@
-import React from "react";
-import { Grid, TextField, Button, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
-import GoogleIcon from "@mui/icons-material/Google";
+import React from 'react';
+import { Grid, TextField, Button, Typography } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import GoogleIcon from '@mui/icons-material/Google';
 
-import { ISignUpData } from "../../models/Auth";
-import { useAppDispatch } from "../../hooks/redux";
-import { handleRegister } from "../../redux/reducers/authSlice";
-import Input from "../../components/atoms/Input";
+import { ISignUpData } from '../../models/Auth';
+import { useAppDispatch } from '../../hooks/redux';
+import { handleRegister } from '../../redux/reducers/authSlice';
+import Input from '../../components/atoms/Input';
 
 const SignUp: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +17,7 @@ const SignUp: React.FC = () => {
     watch,
     formState: { errors },
   } = useForm<ISignUpData>({
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const onSubmit = async (values: ISignUpData) => {
@@ -39,7 +39,7 @@ const SignUp: React.FC = () => {
       >
         <Grid container item direction="column" alignItems="center">
           <Grid item>
-            <Typography sx={{ color: "blue" }}>Register</Typography>
+            <Typography sx={{ color: 'blue' }}>Register</Typography>
           </Grid>
           <Grid item>
             <Typography variant="h1">Start easier Today</Typography>
@@ -62,13 +62,12 @@ const SignUp: React.FC = () => {
           <Typography>Or continue with</Typography>
         </Grid>
         <Grid container item>
-          <form style={{ width: "100%" }} onSubmit={handleSubmit(onSubmit)}>
+          <form style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
             <Grid container direction="column" spacing={2}>
               <Grid item>
                 <Typography>Full Name*</Typography>
                 <Input
                   // // register={register}
-                  name="fullName"
                   suggestions={false}
                   placeholder="Elon Musk"
                   error={Boolean(errors.fullName?.message)}
@@ -79,7 +78,6 @@ const SignUp: React.FC = () => {
                 <Typography>Username*</Typography>
                 <Input
                   // // register={register}
-                  name="username"
                   suggestions={false}
                   placeholder="elonmusk"
                   error={Boolean(errors.username?.message)}
@@ -90,7 +88,6 @@ const SignUp: React.FC = () => {
                 <Typography>Email address*</Typography>
                 <Input
                   // // register={register}
-                  name="email"
                   suggestions={false}
                   placeholder="elonmusk"
                   type="email"
@@ -102,7 +99,6 @@ const SignUp: React.FC = () => {
                 <Typography>Password*</Typography>
                 <Input
                   // // register={register}
-                  name="password"
                   suggestions={false}
                   placeholder="**********"
                   type="password"
@@ -114,7 +110,6 @@ const SignUp: React.FC = () => {
                 <Typography>Confirm Password*</Typography>
                 <Input
                   // // register={register}
-                  name="confirmPassword"
                   suggestions={false}
                   placeholder="**********"
                   type="password"
