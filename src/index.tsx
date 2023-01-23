@@ -11,6 +11,7 @@ import { setupStore } from "./redux/store";
 import { theme } from "./configs/theme";
 
 import "./index.css";
+import CustomSnackbar from "./components/atoms/CustomSnackbar";
 
 const store = setupStore();
 
@@ -23,6 +24,7 @@ root.render(
       <Router basename="/">
         <Provider store={store}>
           <CssBaseline />
+          <CustomSnackbar />
           <App />
         </Provider>
       </Router>

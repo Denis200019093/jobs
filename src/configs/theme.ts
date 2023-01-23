@@ -183,14 +183,6 @@ export let theme = createTheme({
       //   },
       // ],
     },
-    MuiAvatar: {
-      styleOverrides: {
-        root: {
-          // borderRadius: "10px",
-          boxShadow: "3px 3px 5px #000",
-        },
-      },
-    },
     MuiAppBar: {
       styleOverrides: {
         root: {
@@ -234,11 +226,7 @@ export let theme = createTheme({
       },
     },
     // MuiTab: {
-    //   styleOverrides: {
-    //     root: {
-    //       color: 'rgba(255,255,255,0.8)'
-    //     }
-    //   }
+
     // },
     // MuiTableBody: {
     //   styleOverrides: {
@@ -340,7 +328,6 @@ theme.typography.body1 = {
 };
 theme.typography.body2 = {
   color: "gray",
-  textTransform: "uppercase",
-  fontSize: "14px",
+  fontSize: "15px",
   fontWeight: 500,
 };

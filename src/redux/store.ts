@@ -1,14 +1,17 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { authReducer } from "./reducers/authSlice";
-import { movieReducer } from "./reducers/movieSlice";
+import { snackbarReducer } from "./reducers/snackbarSlice";
+import { imagesReducer } from "./reducers/imagesSlice";
 import { vacanciesApi } from "./features/vacancies.api";
+import { modalReducer } from "./reducers/modalSlice";
 
 const rootReducer = combineReducers({
-  // [movieApi.reducerPath]: movieApi.reducer,
   [vacanciesApi.reducerPath]: vacanciesApi.reducer,
+  snackbar: snackbarReducer,
+  modal: modalReducer,
   auth: authReducer,
-  movie: movieReducer,
+  images: imagesReducer,
 });
 
 export const setupStore = () => {

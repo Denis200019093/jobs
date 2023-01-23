@@ -6,7 +6,7 @@ import { ISignInData, ISignUpData } from "../../models/Auth";
 export const handleLogin = createAsyncThunk(
   "auth/handleLogin",
   async (params: ISignInData) => {
-    const { data } = await axios.post("/auth/login", params);
+    const { data } = await axios.post<IUser>("/auth/login", params);
     return data;
   }
 );
@@ -14,26 +14,25 @@ export const handleLogin = createAsyncThunk(
 export const handleRegister = createAsyncThunk(
   "auth/handleregister",
   async (params: ISignUpData) => {
-    const { data } = await axios.post("/auth/register", params);
+    const { data } = await axios.post<IUser>("/auth/register", params);
     return data;
   }
 );
 
-export const handleGetMe = createAsyncThunk(
-  "auth/handleGetMe",
-  async () => {
-    const { data } = await axios.get("/auth/me");
-    return data;
-  }
-);
+export const handleGetMe = createAsyncThunk("auth/handleGetMe", async () => {
+  const { data } = await axios.get<IUser>("/auth/me");
+  return data;
+});
 
 interface IState {
-  user: IUser | {};
+  user: IUser | null;
+  refetchUser: boolean;
   status: "loading" | "success" | "rejected";
 }
 
 const initialState: IState = {
-  user: {},
+  user: null,
+  refetchUser: false,
   status: "loading",
 };
 
@@ -44,7 +43,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(handleLogin.pending, (state) => {
       state.status = "loading";
-      state.user = {};
+      state.user = null;
     });
     builder.addCase(handleLogin.fulfilled, (state, action) => {
       state.status = "success";
@@ -52,11 +51,11 @@ const authSlice = createSlice({
     });
     builder.addCase(handleLogin.rejected, (state) => {
       state.status = "rejected";
-      state.user = {};
+      state.user = null;
     });
     builder.addCase(handleRegister.pending, (state) => {
       state.status = "loading";
-      state.user = {};
+      state.user = null;
     });
     builder.addCase(handleRegister.fulfilled, (state, action) => {
       state.status = "success";
@@ -64,11 +63,11 @@ const authSlice = createSlice({
     });
     builder.addCase(handleRegister.rejected, (state) => {
       state.status = "rejected";
-      state.user = {};
+      state.user = null;
     });
     builder.addCase(handleGetMe.pending, (state) => {
       state.status = "loading";
-      state.user = {};
+      state.user = null;
     });
     builder.addCase(handleGetMe.fulfilled, (state, action) => {
       state.status = "success";
@@ -76,7 +75,7 @@ const authSlice = createSlice({
     });
     builder.addCase(handleGetMe.rejected, (state) => {
       state.status = "rejected";
-      state.user = {};
+      state.user = null;
     });
   },
 });

@@ -1,45 +1,49 @@
 import * as React from "react";
+import { NavLink } from "react-router-dom";
 import {
   AppBar,
-  Box,
-  Toolbar,
   IconButton,
   Typography,
   Menu,
-  Container,
   Avatar,
   Button,
+  Grid,
   Tooltip,
   MenuItem,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AdbIcon from "@mui/icons-material/Adb";
-import { useAppSelector } from "../../hooks/redux";
-import { IUser } from "../../models/User";
 
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import { useGetUserQuery } from "../../redux/features/user.api";
+import useScrollDirection from "../../hooks/useScrollDirection";
+
+const guestLinks = [
+  { path: "/", label: "Home" },
+  { path: "result", label: "Search" },
+];
+
+const employeeLinks = [
+  { path: "/", label: "Home" },
+  { path: "employee/profile", label: "Profile" },
+  { path: "result", label: "Search" },
+];
+
+const employerLinks = [
+  { path: "/", label: "Home" },
+  { path: "employer/company-profile", label: "Profile company" },
+  { path: "create-vacancy", label: "Create vacancy" },
+  { path: "result", label: "Search" },
+];
 
 const Header: React.FC = () => {
-  const { user } = useAppSelector((state) => state.auth);
-  const userData = user as IUser
+  const { data: currentUserData } = useGetUserQuery();
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const scrollDirection = useScrollDirection();
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -47,111 +51,116 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem('token')
-  }
+    window.localStorage.removeItem("token");
+  };
+
+  const checkingWhoIsUser = () => {
+    if (!currentUserData) {
+      return guestLinks;
+    }
+
+    if (currentUserData?.typeUser === "Employer") {
+      return employerLinks;
+    } else {
+      return employeeLinks;
+    }
+  };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
+    <AppBar
+      sx={{
+        bgcolor: "#fff",
+        pt: 2.5,
+        pb: 2,
+        // boxShadow: "none",
+        transition: "0.3s",
+        boxShadow: "0 4px 6px rgb(25 15 9 / 10%)",
+        transform: `translateY(${scrollDirection === "down" ? "-100%" : "0"})`,
+      }}
+      position="sticky"
+    >
+      <Grid container justifyContent="center">
+        <Grid
+          container
+          item
+          xs={10.5}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item>
+            <Typography variant="h6" noWrap>
+              LOGO
+            </Typography>
+          </Grid>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+          <Grid item>
+            <Grid container spacing={4}>
+              {checkingWhoIsUser().map((page) => (
+                <Grid item key={page.path}>
+                  <NavLink to={page.path}>
+                    <Typography variant="body2" textAlign="center">
+                      {page.label}
+                    </Typography>
+                  </NavLink>
+                </Grid>
               ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+            </Grid>
+          </Grid>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <Box onClick={handleOpenUserMenu} sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                <IconButton sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-                <Box>
-                  <Typography>Hello,</Typography>
-                  <Typography>{userData.fullName}</Typography>
-                </Box>
-              </Box>
-            </Tooltip>
+          <Grid item sx={{ flexGrow: 0 }}>
+            <Grid>
+              {currentUserData ? (
+                <Tooltip title="Open settings">
+                  <Grid
+                    container
+                    onClick={handleOpenUserMenu}
+                    // sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+                  >
+                    <IconButton sx={{ p: 0 }}>
+                      <Avatar
+                        sx={{ width: "50px", height: "50px" }}
+                        alt={currentUserData.fullName}
+                        src={`http://localhost:4444/${currentUserData.avatarURL}`}
+                      />
+                    </IconButton>
+                  </Grid>
+                </Tooltip>
+              ) : (
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <NavLink to="register">
+                      <Button
+                        sx={{
+                          height: "50px",
+                          maxWidth: "100px",
+                          borderRadius: "10px",
+                        }}
+                        variant="text"
+                        size="small"
+                      >
+                        Register
+                      </Button>
+                    </NavLink>
+                  </Grid>
+                  <Grid item>
+                    <NavLink to="login">
+                      <Button
+                        sx={{
+                          height: "50px",
+                          maxWidth: "100px",
+                          borderRadius: "10px",
+                        }}
+                        variant="contained"
+                        size="small"
+                      >
+                        Sign in
+                      </Button>
+                    </NavLink>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
@@ -169,14 +178,16 @@ const Header: React.FC = () => {
               onClose={handleCloseUserMenu}
             >
               {/* {settings.map((setting) => ( */}
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography onClick={handleLogout} textAlign="center">Logout</Typography>
-                </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography onClick={handleLogout} textAlign="center">
+                  Logout
+                </Typography>
+              </MenuItem>
               {/* ))} */}
             </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
+          </Grid>
+        </Grid>
+      </Grid>
     </AppBar>
   );
 };
