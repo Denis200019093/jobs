@@ -1,37 +1,32 @@
+import { DataBooleanResponse } from "../../models/Features";
 import {
   IUser,
-  UserInfoForUpdate,
-  ICompanyProfile,
+  UpdatedUserInfo,
   ISaveVacancy,
+  UpdatedCompanyInfo,
 } from "../../models/User";
+import { ICompanyProfile } from "../../models/Company";
 import { IVacancy } from "../../models/Vacancy";
 import { vacanciesApi } from "./vacancies.api";
 
-interface IPa {
-  success: boolean;
-}
-
-interface IDa {
-  data: IPa;
-}
-
 export const userApi = vacanciesApi.injectEndpoints({
   endpoints: (build) => ({
-    getUser: build.query<IUser, void>({
+    fetchAllUsers: build.query<IUser[], void>({
       query: () => ({
-        url: `/auth/me`,
+        url: "/users",
+        method: "GET",
       }),
-      providesTags: () => [{ type: "User" }],
-    }),
-    updateUserInfo: build.mutation<IDa, UserInfoForUpdate>({
-      query: ({ updatedInfo, userId }) => ({
-        url: `/update-user-info/${userId}`,
-        method: "PATCH",
-        body: updatedInfo,
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "User", _id: arg.userId },
-      ],
+      providesTags: (result, error, args) => ["User"],
+      // providesTags: (result, error, args) =>
+      //   result
+      //     ? [
+      //         ...result.map(({ _id }) => ({
+      //           type: "User" as const,
+      //           _id: "63c5796143cf79bd683b626e",
+      //         })),
+      //         "User",
+      //       ]
+      //     : ["User"],
     }),
     getSavedVacancies: build.query<IVacancy[], string[]>({
       query: (idSavedVacancies) => ({
@@ -41,7 +36,24 @@ export const userApi = vacanciesApi.injectEndpoints({
         },
       }),
     }),
-    saveVacancy: build.mutation<IDa, ISaveVacancy>({
+    fetchCandidateDetails: build.query<IUser, string | undefined>({
+      query: (id: string) => ({
+        url: `/candidate/${id}`,
+      }),
+      providesTags: (result, error, userId) => [{ type: "User", id: userId }],
+    }),
+    updateUserInfo: build.mutation<DataBooleanResponse, UpdatedUserInfo>({
+      query: ({ updatedInfo, userId }) => ({
+        url: `/update-user-info/${userId}`,
+        method: "PATCH",
+        body: updatedInfo,
+      }),
+      // invalidatesTags: (result, error, arg) => ["User"],
+      invalidatesTags: (result, error, arg) => [
+        { type: "User", _id: arg.userId },
+      ],
+    }),
+    saveVacancy: build.mutation<DataBooleanResponse, ISaveVacancy>({
       query: ({ vacancyId, userId }) => ({
         url: `/save-vacancy/${userId}/${vacancyId}`,
         method: "PATCH",
@@ -50,26 +62,13 @@ export const userApi = vacanciesApi.injectEndpoints({
         { type: "User", _id: arg.userId },
       ],
     }),
-    fetchCandidateDetails: build.query<IUser, string | undefined>({
-      query: (id: string) => ({
-        url: `/candidate/${id}`,
-      }),
-      providesTags: (result, error, userId) => [{ type: "User", id: userId }],
-    }),
-    fetchCompanyDetails: build.query<ICompanyProfile, string | undefined>({
-      query: (userId: string) => ({
-        url: `/company/${userId}`,
-      }),
-      providesTags: (result, error, userId) => [{ type: "User", id: userId }],
-    }),
   }),
 });
 
 export const {
+  useFetchAllUsersQuery,
   useUpdateUserInfoMutation,
   useFetchCandidateDetailsQuery,
-  useFetchCompanyDetailsQuery,
   useSaveVacancyMutation,
   useGetSavedVacanciesQuery,
-  useGetUserQuery,
 } = userApi;

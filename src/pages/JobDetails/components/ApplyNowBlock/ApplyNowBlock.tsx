@@ -7,17 +7,15 @@ import RedditIcon from "@mui/icons-material/Reddit";
 import InstagramIcon from "@mui/icons-material/Instagram";
 
 import {
-  useGetUserQuery,
-  useSaveVacancyMutation,
-} from "../../../../redux/features/user.api";
-import {
   isErrorWithMessage,
   isFetchBaseQueryError,
 } from "../../../../helpers/errorHandle";
+import { useSaveVacancyMutation } from "../../../../redux/features/user.api";
 import { openSnackbar } from "../../../../redux/reducers/snackbarSlice";
 import { useAppDispatch } from "../../../../hooks/redux";
 import { IVacancy } from "../../../../models/Vacancy";
 import { openModal } from "../../../../redux/reducers/modalSlice";
+import { useGetMeQuery } from "../../../../redux/features/auth.api";
 
 const ApplyNowBlock: React.FC<{ vacancy: IVacancy | undefined }> = ({
   vacancy,
@@ -26,7 +24,9 @@ const ApplyNowBlock: React.FC<{ vacancy: IVacancy | undefined }> = ({
 
   const dispatch = useAppDispatch();
 
-  const { data: user } = useGetUserQuery();
+  const { data: user } = useGetMeQuery();
+
+  const handleShowModal = () => dispatch(openModal());
 
   const handleSaveVacancy = useCallback(async () => {
     try {
@@ -63,8 +63,6 @@ const ApplyNowBlock: React.FC<{ vacancy: IVacancy | undefined }> = ({
       }
     }
   }, [dispatch, saveVacancy, user, vacancy]);
-
-  const handleShowModal = () => dispatch(openModal());
 
   return (
     <Grid container item sx={{ mt: 5 }} alignItems="center">

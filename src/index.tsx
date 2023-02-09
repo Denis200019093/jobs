@@ -11,7 +11,7 @@ import { setupStore } from "./redux/store";
 import { theme } from "./configs/theme";
 
 import "./index.css";
-import CustomSnackbar from "./components/atoms/CustomSnackbar";
+import CustomSnackbar from "./components/Reusable/CustomSnackbar";
 
 const store = setupStore();
 

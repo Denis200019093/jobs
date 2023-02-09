@@ -1,4 +1,4 @@
-import { IVacancy } from "./Vacancy";
+import { ICompanyProfile } from "./Company";
 
 export interface IUser {
   _id: string;
@@ -25,27 +25,11 @@ export interface IUser {
   pdfFile?: string;
   profession?: string;
   savedVacancies?: string[];
-  company?: ICompanyProfile;
-}
-
-export interface ICompanyProfile {
-  companyName?: string;
-  companyLocation?: string;
-  memberSince?: string;
-  companyAddress?: string;
-  companyNumber?: string;
-  companyEmail?: string;
-  aboutCompany?: string;
-  companyLogo?: string;
-  companyBackground?: string;
 }
 
 export interface IUserProfile {
   fullName?: string;
   username?: string;
-  email?: string;
-  avatarURL?: string;
-  backgroundURL?: string;
   contactNumber?: string;
   yourWebsite?: string;
   country?: string;
@@ -58,13 +42,32 @@ export interface IUserProfile {
   jobExperience?: string;
   englishLevel?: string;
   profession?: string;
-  pdfFile?: string;
   jobSalary?: number[];
 }
 
-export interface UserInfoForUpdate {
+interface CompanyInfoAllowUpdate {
+  companyName: string;
+  memberSince: string;
+  companyLocation: string;
+  companyAddress: string;
+  companyLogo?: string;
+  companyBackground?: string;
+}
+
+interface EmployerInfoAllowUpdate {
+  fullName: string;
+  email: string;
+  contactNumber: string;
+}
+
+export interface UpdatedCompanyInfo {
+  companyId?: string;
+  updatedInfo: CompanyInfoAllowUpdate | { description?: string };
+}
+
+export interface UpdatedUserInfo {
   userId: string;
-  updatedInfo: IUserProfile | ICompanyProfile;
+  updatedInfo: EmployerInfoAllowUpdate | IUserProfile;
 }
 
 export interface ISaveVacancy {

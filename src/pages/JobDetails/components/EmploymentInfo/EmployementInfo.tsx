@@ -1,5 +1,6 @@
 import React from "react";
 import { Divider, Grid, Typography } from "@mui/material";
+
 import { IVacancy } from "../../../../models/Vacancy";
 
 const EmployementInfo: React.FC<{ vacancyDetails?: IVacancy }> = ({
@@ -64,9 +65,7 @@ const EmployementInfo: React.FC<{ vacancyDetails?: IVacancy }> = ({
               <Typography variant="body2">Job type</Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>
-                {vacancyDetails?.jobTypes?.join(", ")}
-              </Typography>
+              <Typography>{vacancyDetails?.jobTypes?.join(", ")}</Typography>
             </Grid>
           </Grid>
           <Grid container item xs={6} alignItems="center">

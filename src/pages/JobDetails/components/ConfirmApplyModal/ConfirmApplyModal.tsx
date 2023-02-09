@@ -8,10 +8,9 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+
 import { closeModal } from "../../../../redux/reducers/modalSlice";
 import { useAppSelector, useAppDispatch } from "../../../../hooks/redux";
-import { useGetUserQuery } from "../../../../redux/features/user.api";
-import CustomDivider from "../../../../components/atoms/CustomDivider";
 import { NavLink } from "react-router-dom";
 import { openSnackbar } from "../../../../redux/reducers/snackbarSlice";
 
@@ -69,7 +68,7 @@ const ConfirmApplyModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const { showModal } = useAppSelector((state) => state.modal);
 
-  const { data: user } = useGetUserQuery();
+  const { user } = useAppSelector((state) => state.auth);
 
   const handleClose = () => dispatch(closeModal());
 

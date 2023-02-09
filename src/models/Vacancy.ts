@@ -1,3 +1,5 @@
+import { ICompanyProfile } from "./Company";
+
 export interface IEmploymentInfo {
   jobTypes: string[];
   jobExperience: string;
@@ -22,10 +24,10 @@ export interface IVacancy extends IEmploymentInfo {
   _id: string;
   backgroundURL: string;
   avatarURL: string;
-  // employmentInfo: IEmploymentInfo
-  // overviewInfo: IOverviewCompanyInfoInfo
   jobTitle: string;
   jobDescription: string;
+  companyName: string;
+  companyLocation: string;
   jobAuthor: string;
-  jobTags?: string[];
+  createdAt: string;
 }

@@ -3,20 +3,15 @@ import { Grid, Typography, FormLabel } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 
-import CustomDivider from "../atoms/CustomDivider";
-import CustomSelect from "../atoms/CustomSelect";
-
-interface FilterScheme {
-  jobIndustries: string[];
-  jobPositions: string[];
-  jobLocations: string[];
-  jobTypes: string[];
-}
-
-const jobIndustriesOptions = ["Web development", "Game development"];
-const jobPositionOptions = ["Junior", "Middle", "Senior"];
-const jobLocationOptions = ["On-site", "Remote", "Hybrid"];
-const jobTypesOptions = ["Full time", "Part time", "Remote"];
+import {
+  jobIndustriesOptions,
+  jobLocationOptions,
+  jobPositionOptions,
+  jobTypesOptions,
+} from "../../helpers/arrays";
+import { FilterScheme } from "../../models/Filter";
+import CustomDivider from "../Reusable/CustomDivider";
+import CustomSelect from "../Reusable/CustomSelect";
 
 const FilterBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,8 +19,12 @@ const FilterBar = () => {
   const { control, reset, watch } = useForm<FilterScheme>({
     mode: "onChange",
   });
-  
-  const search_value = searchParams.get("search_query") || "";
+
+  const search_value = searchParams.get("search_query");
+  const industries = searchParams.get("industries")?.split("-and-");
+  const positions = searchParams.get("positions")?.split("-and-");
+  const locations = searchParams.get("locations")?.split("-and-");
+  const types = searchParams.get("types")?.split("-and-");
 
   const watchIndustries = watch("jobIndustries");
   const watchPositions = watch("jobPositions");
@@ -47,7 +46,8 @@ const FilterBar = () => {
     const filteredTypes = watchTypes
       ?.filter((item: string) => item !== "")
       .join("-and-");
-
+    console.log(!!filteredIndustries);
+    
     if (search_value) params.search_query = search_value;
     if (filteredIndustries?.length) params.industries = filteredIndustries;
     if (filteredPositions?.length) params.positions = filteredPositions;
@@ -56,12 +56,12 @@ const FilterBar = () => {
 
     setSearchParams(params);
   }, [
-    watchPositions,
-    watchLocations,
-    watchIndustries,
-    watchTypes,
     search_value,
     setSearchParams,
+    watchIndustries,
+    watchLocations,
+    watchPositions,
+    watchTypes,
   ]);
 
   return (
@@ -89,7 +89,7 @@ const FilterBar = () => {
                   />
                 )}
                 name={"jobIndustries"}
-                defaultValue={[]}
+                defaultValue={industries || []}
                 control={control}
               />
             </Grid>
@@ -102,7 +102,7 @@ const FilterBar = () => {
                   <CustomSelect options={jobPositionOptions} multi {...field} />
                 )}
                 name={"jobPositions"}
-                defaultValue={[]}
+                defaultValue={positions || []}
                 control={control}
               />
             </Grid>
@@ -115,7 +115,7 @@ const FilterBar = () => {
                   <CustomSelect options={jobLocationOptions} multi {...field} />
                 )}
                 name={"jobLocations"}
-                defaultValue={[]}
+                defaultValue={locations || []}
                 control={control}
               />
             </Grid>
@@ -128,7 +128,7 @@ const FilterBar = () => {
                   <CustomSelect options={jobTypesOptions} multi {...field} />
                 )}
                 name={"jobTypes"}
-                defaultValue={[]}
+                defaultValue={types || []}
                 control={control}
               />
             </Grid>

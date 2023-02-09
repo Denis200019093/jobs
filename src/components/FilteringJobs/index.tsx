@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { useFilteringVacanciesQuery } from "../../redux/features/vacancies.api";
 import SearchBar from "../../components/SearchBar";
 import FilterBar from "../../components/FilterBar";
-import ShowingBar from "../../components/ShowingBar";
+import ShowingBar from "../ShowVacanciesBar";
 
 const FilteringJobs: React.FC = () => {
   const [searchParams] = useSearchParams();

@@ -39,7 +39,11 @@ const initialState: IState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    handleLogOut(state) {
+      state.user = null;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(handleLogin.pending, (state) => {
       state.status = "loading";
@@ -80,4 +84,5 @@ const authSlice = createSlice({
   },
 });
 
+export const { handleLogOut } = authSlice.actions;
 export const authReducer = authSlice.reducer;

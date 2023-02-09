@@ -2,17 +2,14 @@ import React from "react";
 import { Grid, Button, styled } from "@mui/material";
 import { NavLink, Outlet } from "react-router-dom";
 
-import { useGetUserQuery } from "../../redux/features/user.api";
-import PreviewBar from "../../components/organisms/PreviewBar";
-
-const employeeLinks = [
-  { path: "profile", label: "Profile", end: true },
-  { path: "about-me", label: "About me", end: false },
-  { path: "saved-jobs", label: "Saved jobs", end: false },
-];
+import PreviewBar from "../../components/Reusable/PreviewBar";
+import { employeeProfileLinks } from "../../helpers/arrays";
+import { useAppSelector } from "../../hooks/redux";
+import { useGetMeQuery } from "../../redux/features/auth.api";
 
 const Employee: React.FC = () => {
-  const { data: user } = useGetUserQuery();
+  const { data: user } = useGetMeQuery();
+  // const { user } = useAppSelector((state) => state.auth);
 
   return (
     <Grid container>
@@ -29,7 +26,7 @@ const Employee: React.FC = () => {
       <Grid container item spacing={5}>
         <Grid item xs={12} md={3}>
           <Grid container>
-            {employeeLinks.map((item) => (
+            {employeeProfileLinks.map((item) => (
               <NavLinkProfile
                 key={item.path}
                 draggable={false}

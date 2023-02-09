@@ -2,34 +2,32 @@ import React from "react";
 import { Grid, Button, styled } from "@mui/material";
 import { NavLink, Outlet } from "react-router-dom";
 
-import { useGetUserQuery } from "../../redux/features/user.api";
-import PreviewBar from "../../components/organisms/PreviewBar";
-
-const employeeLinks = [
-  { path: "profile", label: "Profile", end: true },
-  { path: "about-me", label: "About me", end: false },
-  { path: "saved-jobs", label: "Saved jobs", end: false },
-];
+import { employerProfileLinks } from "../../helpers/arrays";
+import { useGetCompanyDetailsQuery } from "../../redux/features/company.api";
+import { useGetMeQuery } from "../../redux/features/auth.api";
+import PreviewBar from "../../components/Reusable/PreviewBar";
+import AboutMe from "../../components/AboutMe";
 
 const Employer: React.FC = () => {
-  const { data: user } = useGetUserQuery();
+  const { data: user } = useGetMeQuery();
+  const { data: companyDetails } = useGetCompanyDetailsQuery(user?._id);
+  console.log(companyDetails);
 
   return (
     <Grid container>
       <PreviewBar
         allowEditing={true}
-        previewTitle={user ? user.fullName : ""}
-        miniDescription={user ? user.profession : ""}
-        location={user?.city || ""}
+        previewTitle={companyDetails?.companyName}
+        location={companyDetails?.companyLocation}
       >
-        <NavLink to={`/candidate/${user?._id}`}>
+        <NavLink to={`/company/${companyDetails?._id}`}>
           <Button variant="contained">Preview</Button>
         </NavLink>
       </PreviewBar>
       <Grid container item spacing={5}>
         <Grid item xs={12} md={3}>
           <Grid container>
-            {employeeLinks.map((item) => (
+            {employerProfileLinks.map((item) => (
               <NavLinkProfile
                 key={item.path}
                 draggable={false}

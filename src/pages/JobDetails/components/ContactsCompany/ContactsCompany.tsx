@@ -1,6 +1,8 @@
 import React from "react";
 import { Grid, Avatar, Typography, List, ListItem } from "@mui/material";
-import { ICompanyProfile } from "../../../../models/User";
+
+import { ICompanyProfile } from "../../../../models/Company";
+import { NavLink } from "react-router-dom";
 
 const ContactsCompany: React.FC<{ companyDetails?: ICompanyProfile }> = ({
   companyDetails,
@@ -24,9 +26,11 @@ const ContactsCompany: React.FC<{ companyDetails?: ICompanyProfile }> = ({
               />
             </Grid>
             <Grid item>
-              <Typography variant="h6">
-                {companyDetails?.companyName}
-              </Typography>
+              <NavLink to={`/company/${companyDetails._id}`}>
+                <Typography variant="h6">
+                  {companyDetails?.companyName}
+                </Typography>
+              </NavLink>
               <Typography variant="body2">
                 {companyDetails?.companyLocation}
               </Typography>

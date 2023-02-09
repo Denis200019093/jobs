@@ -13,12 +13,14 @@ import { uploadPdf } from "../../../redux/reducers/imagesSlice";
 
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
+import { useGetMeQuery } from "../../../redux/features/auth.api";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const ShowUploadPdf: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+
+  const { data: user } = useGetMeQuery();
   const { pdf } = useAppSelector((state) => state.images);
 
   const [uploadFile] = useUploadFileMutation();

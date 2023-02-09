@@ -1,37 +1,31 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { PropsToFilterVacancy } from "../../models/Features";
 import { IUser } from "../../models/User";
 import { IVacancy } from "../../models/Vacancy";
 
-interface FilteringVacancyScheme {
-  search_value: string;
-  industries?: string[];
-  locations?: string[];
-  positions?: string[];
-  types?: string[];
-}
-
 export const vacanciesApi = createApi({
   reducerPath: "vacancies",
-  tagTypes: ["Vacancies", "Auth", "File", "User"],
+  tagTypes: ["Vacancies", "Auth", "File", "User", "Company"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:4444",
+    baseUrl: process.env.REACT_APP_BACK_END_API_URL,
     prepareHeaders: (headers) => {
       const token = window.localStorage.getItem("token");
 
       if (token) headers.set("Authorization", token);
 
+      headers.set("Access-Control-Allow-Origin", "*");
       return headers;
     },
   }),
   endpoints: (build) => ({
     fetchAllVacancies: build.query<IVacancy[], number>({
-      query: (limit: number = 5) => ({
+      query: (limit: number = 10) => ({
         url: `/vacancies`,
         params: {
           _limit: limit,
         },
       }),
-      providesTags: (result) => ["Vacancies"],
+      providesTags: () => ["Vacancies"],
     }),
     createVacancy: build.mutation<IVacancy[], IVacancy>({
       query: (vacancy) => ({
@@ -39,19 +33,17 @@ export const vacanciesApi = createApi({
         method: "POST",
         body: vacancy,
       }),
-      // providesTags: (result) => ["Vacancies"],
+      invalidatesTags: () => ["Vacancies"],
     }),
     fetchVacancyDetails: build.query<IVacancy, string | undefined>({
       query: (id: string) => ({
         url: `/vacancies/${id}`,
       }),
-      providesTags: (result) => ["Vacancies"],
     }),
-    filteringVacancies: build.query<IVacancy[], FilteringVacancyScheme>({
+    filteringVacancies: build.query<IVacancy[], PropsToFilterVacancy>({
       query: ({ search_value, industries, locations, positions, types }) => ({
         url: `/result?search_query=${search_value}&industries=${industries}&locations=${locations}&positions=${positions}&types=${types}`,
       }),
-      providesTags: (result) => ["Vacancies"],
     }),
     searchingCandidates: build.query<IUser[], string>({
       query: (search_value) => ({
@@ -83,5 +75,5 @@ export const {
   useFetchVacancyDetailsQuery,
   useAutocompleteVacanciesQuery,
   useLazyAutocompleteVacanciesQuery,
-  useSearchingCandidatesQuery
+  useSearchingCandidatesQuery,
 } = vacanciesApi;

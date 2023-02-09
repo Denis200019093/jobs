@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Grid, TextField, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 // Icons
@@ -6,20 +6,18 @@ import GoogleIcon from "@mui/icons-material/Google";
 //Mine
 import { ISignInData } from "../../models/Auth";
 import { useAppDispatch } from "../../hooks/redux";
-import { handleLogin } from "../../redux/reducers/authSlice";
 import { openSnackbar } from "../../redux/reducers/snackbarSlice";
-// import { useLoginMutation } from "../../redux/features/auth.api";
 import {
   isErrorWithMessage,
   isFetchBaseQueryError,
 } from "../../helpers/errorHandle";
-import { IUser } from "../../models/User";
+import { useGetMeQuery, useLoginMutation } from "../../redux/features/auth.api";
 
 const SignIn: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { refetch } = useGetMeQuery();
+  const [login] = useLoginMutation();
 
-  // const [login, { error }] = useLoginMutation();
-  // console.log(error);
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -29,48 +27,29 @@ const SignIn: React.FC = () => {
     mode: "onChange",
   });
 
-  // const onSubmit = async (values: ISignInData) => {
-  //   try {
-  //     const data = await login(values).unwrap();
-  //     console.log(data);
+  const onSubmit = useCallback(
+    async (values: ISignInData) => {
+      try {
+        const data = await login(values).unwrap();
 
-  //     if (data && "token" in data) {
-  //       dispatch(
-  //         openSnackbar({ text: "Sign in successful", severity: "success" })
-  //       );
-  //       window.localStorage.setItem("token", data.token);
-  //     }
-  //   } catch (err) {
-  //     if (isFetchBaseQueryError(err)) {
-  //       const errMsg = "error" in err ? err.error : JSON.stringify(err.data);
-  //       dispatch(openSnackbar({ text: errMsg, severity: "error" }));
-  //     } else if (isErrorWithMessage(err)) {
-  //       dispatch(openSnackbar({ text: err.message, severity: "error" }));
-  //     }
-  //   }
-  // };
-
-  const onSubmit = async (values: ISignInData) => {
-    try {
-      const { payload } = (await dispatch(handleLogin(values))) as {
-        payload: IUser;
-      };
-
-      if ("token" in payload) {
-        dispatch(
-          openSnackbar({ text: "Sign in successful", severity: "success" })
-        );
-        window.localStorage.setItem("token", payload.token);
+        if (data && "token" in data) {
+          dispatch(
+            openSnackbar({ text: "Sign in successful", severity: "success" })
+          );
+          window.localStorage.setItem("token", data.token);
+          refetch();
+        }
+      } catch (err) {
+        if (isFetchBaseQueryError(err)) {
+          const errMsg = "error" in err ? err.error : JSON.stringify(err.data);
+          dispatch(openSnackbar({ text: errMsg, severity: "error" }));
+        } else if (isErrorWithMessage(err)) {
+          dispatch(openSnackbar({ text: err.message, severity: "error" }));
+        }
       }
-    } catch (err) {
-      if (isFetchBaseQueryError(err)) {
-        const errMsg = "error" in err ? err.error : JSON.stringify(err.data);
-        dispatch(openSnackbar({ text: errMsg, severity: "error" }));
-      } else if (isErrorWithMessage(err)) {
-        dispatch(openSnackbar({ text: err.message, severity: "error" }));
-      }
-    }
-  };
+    },
+    [dispatch, login, refetch]
+  );
 
   return (
     <Grid container justifyContent="center">
@@ -91,22 +70,6 @@ const SignIn: React.FC = () => {
           <Grid item>
             <Typography variant="h1">Member Login</Typography>
           </Grid>
-          <Grid item>
-            <Typography variant="body2">
-              Access to all features. No credit card required.
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid container item>
-          <Button fullWidth variant="outlined">
-            <Grid container justifyContent="center" alignItems="center">
-              <GoogleIcon />
-              <Typography>Sign in with Google</Typography>
-            </Grid>
-          </Button>
-        </Grid>
-        <Grid item>
-          <Typography>Or continue with</Typography>
         </Grid>
         <Grid container item>
           <form style={{ width: "100%" }} onSubmit={handleSubmit(onSubmit)}>
@@ -133,9 +96,6 @@ const SignIn: React.FC = () => {
                   fullWidth
                 />
               </Grid>
-              <Grid container item justifyContent="end">
-                <Typography>Forgot password</Typography>
-              </Grid>
               <Grid item>
                 <Button
                   size="large"
@@ -148,9 +108,6 @@ const SignIn: React.FC = () => {
               </Grid>
             </Grid>
           </form>
-        </Grid>
-        <Grid item>
-          <Typography>Don't have an Account? Sign up</Typography>
         </Grid>
       </Grid>
     </Grid>

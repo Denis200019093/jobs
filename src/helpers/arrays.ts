@@ -59,3 +59,38 @@ export const marksSalary = [
     label: "10000",
   },
 ];
+
+export const jobIndustriesOptions = ["Web development", "Game development"];
+export const jobPositionOptions = ["Junior", "Middle", "Senior"];
+export const jobLocationOptions = ["On-site", "Remote", "Hybrid"];
+export const jobTypesOptions = ["Full time", "Part time", "Remote"];
+
+export const guestLinks = [
+  { path: "/", label: "Home" },
+  { path: "result", label: "Search" },
+];
+
+export const employeeLinks = [
+  { path: "/", label: "Home" },
+  { path: "employee/profile", label: "Profile" },
+  { path: "result", label: "Search" },
+];
+
+export const employerLinks = [
+  { path: "/", label: "Home" },
+  { path: "employer/company-profile", label: "Profile company" },
+  { path: "create-vacancy", label: "Create vacancy" },
+  { path: "result", label: "Search" },
+];
+
+export const employeeProfileLinks = [
+  { path: "profile", label: "Profile", end: true },
+  { path: "about-me", label: "About me", end: false },
+  { path: "saved-jobs", label: "Saved jobs", end: false },
+];
+
+export const employerProfileLinks = [
+  { path: "company-profile", label: "Company profile", end: true },
+  { path: "about-company", label: "About company", end: false },
+  { path: "our-vacancies", label: "Our vacancies", end: false },
+];

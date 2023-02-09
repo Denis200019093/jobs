@@ -7,22 +7,29 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-// Icons
+
 import GoogleIcon from "@mui/icons-material/Google";
-// Mine
-import { ISignUpData } from "../../models/Auth";
-import { useAppDispatch } from "../../hooks/redux";
-import { handleRegister } from "../../redux/reducers/authSlice";
-import { openSnackbar } from "../../redux/reducers/snackbarSlice";
+
 import {
   isErrorWithMessage,
   isFetchBaseQueryError,
 } from "../../helpers/errorHandle";
+import { ISignUpData } from "../../models/Auth";
+import { useAppDispatch } from "../../hooks/redux";
+import { handleRegister } from "../../redux/reducers/authSlice";
+import { openSnackbar } from "../../redux/reducers/snackbarSlice";
 import { IUser } from "../../models/User";
-import Input from "../../components/atoms/CustomInput";
+import Input from "../../components/Reusable/CustomInput";
+import {
+  useGetMeQuery,
+  useRegisterMutation,
+} from "../../redux/features/auth.api";
 
 const SignUp: React.FC = () => {
   const [typeUser, setTypeUser] = React.useState("Employee");
+
+  const { refetch } = useGetMeQuery();
+  const [register] = useRegisterMutation();
 
   const dispatch = useAppDispatch();
 
@@ -51,17 +58,14 @@ const SignUp: React.FC = () => {
         );
       }
 
-      const { payload } = (await dispatch(
-        handleRegister({ ...values, typeUser })
-      )) as {
-        payload: IUser;
-      };
+      const data = await register({ ...values, typeUser }).unwrap();
 
-      if ("token" in payload) {
+      if ("token" in data) {
         dispatch(
           openSnackbar({ text: "Sign in successful", severity: "success" })
         );
-        window.localStorage.setItem("token", payload.token);
+        window.localStorage.setItem("token", data.token);
+        refetch();
       }
     } catch (err) {
       if (isFetchBaseQueryError(err)) {
@@ -92,22 +96,6 @@ const SignUp: React.FC = () => {
           <Grid item>
             <Typography variant="h1">Start easier Today</Typography>
           </Grid>
-          <Grid item>
-            <Typography variant="body2">
-              Access to all features. No credit card required.
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid container item>
-          <Button fullWidth variant="outlined">
-            <Grid container justifyContent="center" alignItems="center">
-              <GoogleIcon />
-              <Typography>Sign in with Google</Typography>
-            </Grid>
-          </Button>
-        </Grid>
-        <Grid item>
-          <Typography>Or continue with</Typography>
         </Grid>
         <Grid item>
           <ToggleButtonGroup
@@ -207,9 +195,7 @@ const SignUp: React.FC = () => {
                   )}
                 />
               </Grid>
-              <Grid container item justifyContent="end">
-                <Typography>Forgot password</Typography>
-              </Grid>
+
               <Grid item>
                 <Button
                   size="large"
@@ -222,9 +208,6 @@ const SignUp: React.FC = () => {
               </Grid>
             </Grid>
           </form>
-        </Grid>
-        <Grid item>
-          <Typography>Don't have an Account? Sign in</Typography>
         </Grid>
       </Grid>
     </Grid>

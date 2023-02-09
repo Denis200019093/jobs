@@ -4,7 +4,7 @@ export interface ISignInData {
   password: string;
 }
 
-// For sign up form
+// Sign up data
 export interface ISignUpData {
   typeUser: string;
   fullName: string;

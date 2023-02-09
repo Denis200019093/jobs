@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, ChangeEvent } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Grid,
   Button,
@@ -10,53 +10,46 @@ import {
 import SimpleEditor from "react-simplemde-editor";
 import { Options } from "easymde";
 import { Controller, useForm } from "react-hook-form";
-// Mine
-import Input from "../../components/atoms/CustomInput";
-import CustomSelect from "../../components/atoms/CustomSelect";
-import { useUploadFileMutation } from "../../redux/features/fileUpload.api";
-import CustomAvatar from "../../components/atoms/CustomAvatar";
-import Background from "../../components/atoms/Background";
-import { useCreateVacancyMutation } from "../../redux/features/vacancies.api";
-import { IEmploymentInfo, IVacancy } from "../../models/Vacancy";
-import {
-  IndustriesJob,
-  PositionsJob,
-  LocationsJob,
-  TypesJob,
-  ExperienceJob,
-  CitiesJob,
-  marksSalary,
-} from "./options";
-// Style
-import "easymde/dist/easymde.min.css";
+
 import {
   isErrorWithMessage,
   isFetchBaseQueryError,
 } from "../../helpers/errorHandle";
+import {
+  ExperienceJob,
+  IndustriesJob,
+  marksSalary,
+  PositionsJob,
+  TypesJob,
+} from "../../helpers/arrays";
+import { useCreateVacancyMutation } from "../../redux/features/vacancies.api";
+import { IVacancy } from "../../models/Vacancy";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { useGetCompanyDetailsQuery } from "../../redux/features/company.api";
+import { useGetMeQuery } from "../../redux/features/auth.api";
 import { openSnackbar } from "../../redux/reducers/snackbarSlice";
-import CustomDivider from "../../components/atoms/CustomDivider";
+import CustomSelect from "../../components/Reusable/CustomSelect";
+import CustomDivider from "../../components/Reusable/CustomDivider";
+import PreviewBar from "../../components/Reusable/PreviewBar";
+
+import "easymde/dist/easymde.min.css";
 
 const CreateVacancy: React.FC = () => {
   const [value, setValue] = useState("");
 
   const [createVacancy, { isLoading }] = useCreateVacancyMutation();
+  const { data: user } = useGetMeQuery();
+  const { data: companyDetails } = useGetCompanyDetailsQuery(user?._id);
 
   const dispatch = useAppDispatch();
 
   const { avatarURL, backgroundURL } = useAppSelector((state) => state.images);
-  const { user } = useAppSelector((state) => state.auth);
 
   const handlerTextVacancy = useCallback((value: string) => {
     setValue(value);
   }, []);
 
-  const {
-    control,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<IVacancy>({
+  const { control, handleSubmit, register } = useForm<IVacancy>({
     mode: "onChange",
   });
 
@@ -68,52 +61,24 @@ const CreateVacancy: React.FC = () => {
         autoFocus: true,
         placeholder: "Enter your text...",
         status: false,
-        // uniqueId: 1,
-        // autosave: {
-        //   enabled: true,
-        //   delay: 1000,
-        // },
       } as Options),
     []
   );
 
-  // const onSubmit = async (values: ISignInData) => {
-  //   try {
-  //     const data = await login(values).unwrap();
-  //     console.log(data);
-
-  //     if (data && "token" in data) {
-  //       dispatch(
-  //         openSnackbar({ text: "Sign in successful", severity: "success" })
-  //       );
-  //       window.localStorage.setItem("token", data.token);
-  //     }
-  //   } catch (err) {
-  //     if (isFetchBaseQueryError(err)) {
-  //       const errMsg = "error" in err ? err.error : JSON.stringify(err.data);
-  //       dispatch(openSnackbar({ text: errMsg, severity: "error" }));
-  //     } else if (isErrorWithMessage(err)) {
-  //       dispatch(openSnackbar({ text: err.message, severity: "error" }));
-  //     }
-  //   }
-  // };
-
   const submitCreateVacancy = async (values: IVacancy) => {
     try {
       if (user) {
-        const fields = {
+        const fields: IVacancy = {
           ...values,
           avatarURL,
           backgroundURL,
           jobDescription: value,
           jobAuthor: user._id,
+          companyName: companyDetails?.companyName || "",
+          companyLocation: companyDetails?.companyLocation || "",
         };
 
         await createVacancy(fields).unwrap();
-      } else {
-        dispatch(
-          openSnackbar({ text: "You can`t create vacancy", severity: "error" })
-        );
       }
     } catch (err) {
       if (isFetchBaseQueryError(err)) {
@@ -139,8 +104,7 @@ const CreateVacancy: React.FC = () => {
       >
         <Grid container spacing={4}>
           <Grid container item sx={{ position: "relative", pb: 3 }}>
-            <CustomAvatar position="absolute" allowEditing={true} />
-            <Background allowEditing={true} />
+            <PreviewBar allowEditing={true} />
           </Grid>
           <Grid container item>
             <InputBase
@@ -158,20 +122,6 @@ const CreateVacancy: React.FC = () => {
               placeholder="Front-end developer..."
               inputProps={{ "aria-label": "search" }}
               {...register("jobTitle")}
-            />
-          </Grid>
-          <Grid container item>
-            <Controller
-              name="jobTags"
-              control={control}
-              render={({ field: { ref, ...field } }) => (
-                <Input
-                  placeholder="Tags (react, js, javascript)"
-                  error={Boolean(errors.jobTags?.message)}
-                  variant="standard"
-                  {...field}
-                />
-              )}
             />
           </Grid>
           <Grid container item>
@@ -215,19 +165,6 @@ const CreateVacancy: React.FC = () => {
                       control={control}
                     />
                   </Grid>
-                  {/* <Grid container item xs={12} md={4}>
-                    <FormLabel component="legend">
-                      <Typography variant="h6">Location</Typography>
-                    </FormLabel>
-                    <Controller
-                      render={({ field }) => (
-                        <CustomSelect options={LocationsJob} multi {...field} />
-                      )}
-                      name={"jobLocation"}
-                      defaultValue={[]}
-                      control={control}
-                    />
-                  </Grid> */}
                   <Grid container item xs={12} md={3}>
                     <FormLabel component="legend">
                       <Typography variant="h6">Type</Typography>
@@ -254,19 +191,6 @@ const CreateVacancy: React.FC = () => {
                       control={control}
                     />
                   </Grid>
-                  {/* <Grid container item xs={12} md={4}>
-                    <FormLabel component="legend">
-                      <Typography variant="h6">City</Typography>
-                    </FormLabel>
-                    <Controller
-                      render={({ field: { ref, ...field } }) => (
-                        <CustomSelect options={CitiesJob} {...field} />
-                      )}
-                      name={"jobCity"}
-                      defaultValue={""}
-                      control={control}
-                    />
-                  </Grid> */}
                   <Grid container item xs={12} md={12}>
                     <FormLabel component="legend">
                       <Typography variant="h6">Salary range</Typography>
@@ -274,7 +198,7 @@ const CreateVacancy: React.FC = () => {
                     <Controller
                       name="jobSalary"
                       control={control}
-                      defaultValue={[500, 2500]}
+                      defaultValue={[100, 10000]}
                       render={({ field: { value, onChange } }) => (
                         <Slider
                           getAriaLabel={() => "Minimum distance"}
@@ -291,12 +215,6 @@ const CreateVacancy: React.FC = () => {
                     />
                   </Grid>
                   <Grid container item>
-                    <Typography variant="h5">
-                      About us/Requirements etc...
-                    </Typography>
-                    <CustomDivider />
-                  </Grid>
-                  <Grid container item>
                     <SimpleEditor
                       style={{ width: "100%" }}
                       value={value}
@@ -310,7 +228,7 @@ const CreateVacancy: React.FC = () => {
                       type="submit"
                       variant="contained"
                     >
-                      Submit creating
+                      Post vacancy
                     </Button>
                   </Grid>
                 </Grid>
